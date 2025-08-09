@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+  <h1>Добро пожаловать в ПолитИгра!</h1>
+
+  {% if current_user.is_authenticated %}
+    <p>Привет, {{ current_user.username }}!</p>
+    <ul>
+      <li><a href="{{ url_for('parties.list_parties') }}">Список партий</a></li>
+      <li><a href="{{ url_for('polls.list_polls') }}">Список опросов</a></li>
+      <li><a href="{{ url_for('parties.create_party') }}">Создать партию</a></li>
+      <li><a href="{{ url_for('polls.create_poll') }}">Создать опрос</a></li>
+      <li><a href="{{ url_for('laws.create_law') }}">Создать закон</a></li>
+    </ul>
+  {% else %}
+    <p><a href="{{ url_for('users.login') }}">Войдите</a> или <a href="{{ url_for('users.register') }}">зарегистрируйтесь</a>, чтобы участвовать.</p>
+  {% endif %}
+<p>Недавние опросы</p>
+<ul>
+  {% for poll in polls %}
+    <li>
+      <a href="{{ url_for('polls.vote', poll_id=poll.id) }}">
+        {{ poll.question }} [{{ 'Голосование' if poll.type == 'vote' else 'Предложения' }}]
+      </a>
+    </li>
+  {% endfor %}
+</ul>
+<h2>Законы:</h2>
+<ul>
+  {% for law in laws %}
+    <li><a href="{{url_for('laws.law_profile', law_id=law.id)}}">{{law.name}}</a></li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

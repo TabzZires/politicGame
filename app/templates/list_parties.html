@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}Список партий{% endblock %}
+
+{% block content %}
+  <h2>Список партий</h2>
+  <ul>
+    {% for party in parties %}
+      <li><a href="{{ url_for('parties.party_profile', party_id=party.id) }}">{{ party.name }}</a></li>
+    {% else %}
+      <li>Пока партий нет.</li>
+    {% endfor %}
+  </ul>
+  <a href="{{ url_for('parties.create_party') }}">Создать партию</a>
+{% endblock %}

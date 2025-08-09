@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}Создать опрос{% endblock %}
+
+{% block content %}
+  <h2>Создать опрос</h2>
+  <form method="post">
+    {{ form.csrf_token }}
+    <p>{{ form.question.label }}<br>{{ form.question(size=60) }}</p>
+    <p>{{ form.type.label }}<br>{{ form.type() }}</p>
+    <p>{{ form.options.label }}<br>{{ form.options(rows=5, cols=60) }}</p>
+    <p>{{ form.submit() }}</p>
+  </form>
+
+  <script>
+    // Показывать поле "options" только если выбран тип "vote"
+    const typeSelect = document.querySelector('[name="type"]');
+    const optionsField = document.querySelector('[name="options"]').parentElement;
+
+    function toggleOptions() {
+      optionsField.style.display = (typeSelect.value === 'vote') ? 'block' : 'none';
+    }
+
+    typeSelect.addEventListener('change', toggleOptions);
+    toggleOptions();
+  </script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>{{ poll.question }}</h2>
+
+<h3>Предложения</h3>
+<ul>
+  {% for s in suggestions %}
+    <li><b>
+      {% if s.user %}
+      <a href="{{url_for('users.profile', user_id=s.user.id)}}">{{s.user.username}}</a>
+      {%else%}
+      Гость
+      {%endif%}
+    </b> {{ s.text }}</li>
+  {% endfor %}
+</ul>
+
+<h3>Оставить предложение</h3>
+<form method="post">
+  {{ form.csrf_token }}
+  {{ form.text.label }} {{ form.text() }}
+  {{ form.submit() }}
+</form>
+{% endblock %}

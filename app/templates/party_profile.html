@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block title %}Профиль партии{% endblock %}
+
+{% block content %}
+  <h2>Партия: {{ party.name }}</h2>
+  <p><strong>Лидер:</strong> {{ party.leader.username if party.leader else "—" }}</p>
+  <h3>Участники</h3>
+  <ul>
+      {% for member in party.members %}
+      <li><a href="{{url_for('users.profile', user_id=member.id)}}">{{ member.username }}</a></li>
+      {% endfor %}
+  </ul>
+
+
+  <h3>Опросы партии</h3>
+  {% if party.polls %}
+    <ul>
+    {% for poll in party.polls %}
+      <li>
+        <a href="{{ url_for('polls.vote', poll_id=poll.id) }}">{{ poll.question }}</a>
+        <small>({{ 'Голосование' if poll.type == 'vote' else 'Предложения' }})</small>
+      </li>
+    {% endfor %}
+    </ul>
+  {% else %}
+    <p>Опросов пока нет.</p>
+  {% endif %}
+  {% if current_user.is_authenticated and current_user.party_id != party.id %}
+    <form action="{{ url_for('parties.join_party', party_id=party.id) }}" method="get">
+      <button type="submit">Вступить в партию</button>
+    </form>
+  {% elif current_user.party_id == party.id %}
+    <p><em>Вы состоите в этой партии</em></p>
+  {% endif %}
+  {% if current_user.is_authenticated and current_user.party_id == party.id %}
+    <form action="{{ url_for('parties.leave_party', party_id=party.id) }}" method="get">
+      <button type="submit">Выйти из партии</button>
+    </form>
+  {%endif%}
+  {% if current_user.is_authenticated and current_user.party_id == party.id and party.leader_id == None%}
+    <form action="{{ url_for('parties.become_leader', party_id=party.id) }}">
+      <button type="submit">Стать лидер</button>
+    </form>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block title %}Голосование{% endblock %}
+{% block content %}
+  <h2>{{ poll.question }}</h2>
+
+  <form method="post">
+    {{ form.csrf_token }}
+    {% for option in form.options %}
+      <p>{{ option.label }}{{ option() }}</p>
+    {% endfor %}
+    <p>{{ form.submit() }}</p>
+  </form>
+
+  <h3>Результаты:</h3>
+  <ul>
+    {% for opt in poll.options %}
+      <li>{{ opt.text }} — {{ opt.votes|length }} голосов</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

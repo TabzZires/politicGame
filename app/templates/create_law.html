@@ -1,0 +1,203 @@
+{% extends "layout.html" %}
+{% block title %}Создать закон{% endblock %}
+
+{% block content %}
+<h1>Создать закон</h1>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    <p>
+        {{ form.name.label }}<br>
+        {{ form.name(size=50) }}
+    </p>
+
+    <div style="display:flex; gap:20px;">
+        <!-- Панель слов -->
+        <div style="width:40%;">
+            <h3>Слова</h3>
+            {% for word in words %}
+                <div class="draggable-block {{ word.type }}" draggable="true"
+                     data-text="{{ word.text }}">
+                    {{ word.text }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Область сборки -->
+        <div style="width:60%;">
+            <h3>Конструктор закона</h3>
+            <div id="drop-zone" style="min-height:150px; border:2px dashed #ccc; padding:10px;">
+                <p style="color:#999;">Перетащите слова сюда...</p>
+            </div>
+        </div>
+    </div>
+
+    {{ form.text(id="law-text", type="hidden") }}
+    <p>{{ form.submit() }}</p>
+</form>
+
+<style>
+.draggable-block {
+    padding:5px 10px;
+    margin:5px 0;
+    background:#eee;
+    border:1px solid #ccc;
+    cursor:grab;
+    display:inline-block;
+}
+.subject { background:#d0ebff; }
+.condition { background:#fff3bf; }
+.action { background:#d3f9d8; }
+.extra { background:#f8d0e4; }
+.placeholder { background:#e0e0e0; font-style:italic; }
+#drop-zone .block-wrapper {
+    display:inline-flex;
+    align-items:center;
+    background:#f9f9f9;
+    border:1px solid #ccc;
+    padding:3px;
+    margin:3px;
+}
+.remove-btn {
+    margin-left:5px;
+    cursor:pointer;
+    color:red;
+    font-weight:bold;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const dropZone = document.getElementById("drop-zone");
+    const hiddenField = document.getElementById("law-text");
+
+    document.querySelectorAll(".draggable-block").forEach(block => {
+        block.addEventListener("dragstart", e => {
+            e.dataTransfer.setData("text/plain", block.dataset.text);
+            e.dataTransfer.setData("type", block.classList[1]);
+        });
+    });
+
+    dropZone.addEventListener("dragover", e => {
+        e.preventDefault();
+        dropZone.style.background = "#f0f0f0";
+    });
+
+    dropZone.addEventListener("drop", e => {
+        e.preventDefault();
+        dropZone.style.background = "";
+
+        const text = e.dataTransfer.getData("text/plain");
+        const type = e.dataTransfer.getData("type");
+
+        if (text) {
+            let wrapper = document.createElement("span");
+            wrapper.className = "block-wrapper";
+
+            let element;
+            if (type === "placeholder") {
+                element = createInputPlaceholder(text);
+            } else {
+                element = document.createElement("span");
+                element.className = "draggable-block";
+                element.textContent = text;
+                element.dataset.text = text;
+            }
+
+            let removeBtn = document.createElement("span");
+            removeBtn.className = "remove-btn";
+            removeBtn.textContent = "×";
+            removeBtn.onclick = () => {
+                wrapper.remove();
+                updateHiddenField();
+            };
+
+            wrapper.appendChild(element);
+            wrapper.appendChild(removeBtn);
+            dropZone.appendChild(wrapper);
+            updateHiddenField();
+        }
+    });
+
+    dropZone.addEventListener("input", updateHiddenField);
+
+    function createInputPlaceholder(label) {
+        let inputType = "text";
+
+        if (label === "[ЧИСЛО]") inputType = "number";
+        if (label === "[ДАТА]") inputType = "date";
+
+        if (label === "[ПОЛЬЗОВАТЕЛЬ]" || label === "[ПАРТИЯ]") {
+            let input = document.createElement("input");
+            input.type = "text";
+            input.placeholder = label + " (поиск...)";
+            input.dataset.placeholder = label;
+            input.oninput = () => searchEntities(label, input);
+            return input;
+        }
+
+        const input = document.createElement("input");
+        input.type = inputType;
+        input.placeholder = label;
+        input.dataset.placeholder = label;
+        return input;
+    }
+
+    function searchEntities(label, input) {
+        let url = "";
+        if (label === "[ПОЛЬЗОВАТЕЛЬ]") url = "/laws/api/search_users?q=" + encodeURIComponent(input.value);
+        if (label === "[ПАРТИЯ]") url = "/laws/api/search_parties?q=" + encodeURIComponent(input.value);
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                let list = document.createElement("ul");
+                list.style.background = "#fff";
+                list.style.position = "absolute";
+                list.style.border = "1px solid #ccc";
+                list.style.padding = "5px";
+                list.style.listStyle = "none";
+                list.style.maxHeight = "150px";
+                list.style.overflowY = "auto";
+
+                list.innerHTML = "";
+                data.forEach(item => {
+                    let li = document.createElement("li");
+                    li.textContent = item.name;
+                    li.style.cursor = "pointer";
+                    li.onclick = () => {
+                        input.value = item.name;
+                        document.body.removeChild(list);
+                        updateHiddenField();
+                    };
+                    list.appendChild(li);
+                });
+
+                let rect = input.getBoundingClientRect();
+                list.style.left = rect.left + "px";
+                list.style.top = rect.bottom + "px";
+                list.style.width = rect.width + "px";
+
+                if (document.querySelector("body > ul")) {
+                    document.body.removeChild(document.querySelector("body > ul"));
+                }
+                document.body.appendChild(list);
+            });
+    }
+
+    function updateHiddenField() {
+        const parts = [];
+        dropZone.querySelectorAll(".block-wrapper").forEach(wrapper => {
+            let el = wrapper.querySelector(".draggable-block, input");
+            if (el.tagName === "INPUT") {
+                parts.push(`${el.dataset.placeholder}:${el.value}`);
+            } else {
+                parts.push(el.dataset.text);
+            }
+        });
+        hiddenField.value = parts.join("; ");
+    }
+});
+</script>
+{% endblock %}

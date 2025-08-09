@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block title %}Опросы{% endblock %}
+
+{% block content %}
+  <h2>Список опросов</h2>
+  <ul>
+{% for poll in polls %}
+  <li>
+    <a href="{{ url_for('polls.vote', poll_id=poll.id) }}">
+      {{ poll.question }}
+    </a>
+    <small>
+      [{{ 'Голосование' if poll.type == 'vote' else 'Предложения' }}]
+      — {{ poll.party.name if poll.party else 'Без партии' }},
+      автор: {{ poll.author.username }}
+    </small>
+  </li>
+{% endfor %}
+</ul>
+
+  <a href="{{ url_for('polls.create_poll') }}">Создать опрос</a>
+{% endblock %}

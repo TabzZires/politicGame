@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block title %}Закон{% endblock %}
+
+{% block content %}
+    <h2>Закон: {{law.name}}</h2>
+    <h2>Автор: {{law.user.username}}</h2>
+    <h2>Партия: {{law.party.name if law.party else 'Собственный'}}</h2>
+    <p>{{law.text}}</p>
+{% endblock %}

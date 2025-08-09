@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}ПолитИгра{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <nav>
+    <a href="{{ url_for('parties.list_parties') }}">Партии</a> |
+    <a href="{{ url_for('polls.list_polls') }}">Опросы</a>
+    {% if current_user.is_authenticated %}
+    Привет, <a href="{{url_for('users.profile', user_id=current_user.id)}}">{{ current_user.username }}</a> |
+    <a href="{{ url_for('users.logout') }}">Выйти</a>
+  {% else %}
+    <a href="{{ url_for('users.login') }}">Вход</a> |
+    <a href="{{ url_for('users.register') }}">Регистрация</a>
+  {% endif %}
+  </nav>
+
+  <hr>
+  <div>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+  </div>
+  {% block content %}{% endblock %}
+</body>
+</html>

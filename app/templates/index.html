@@ -2,35 +2,72 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
-  <h1>Добро пожаловать в ПолитИгра!</h1>
+<div class="container">
+  <div class="row">
+    <!-- Левая колонка -->
+    <div class="col-md-3">
+      <!-- Статус государства -->
+      <div class="card mb-3">
+        <div class="card-header">Статус государства</div>
+        <div class="card-body">
+          <p>Правитель: <strong>Не назначен</strong></p>
+          <p>Форма правления: <strong>Демократия</strong></p>
+        </div>
+      </div>
 
-  {% if current_user.is_authenticated %}
-    <p>Привет, {{ current_user.username }}!</p>
-    <ul>
-      <li><a href="{{ url_for('parties.list_parties') }}">Список партий</a></li>
-      <li><a href="{{ url_for('polls.list_polls') }}">Список опросов</a></li>
-      <li><a href="{{ url_for('parties.create_party') }}">Создать партию</a></li>
-      <li><a href="{{ url_for('polls.create_poll') }}">Создать опрос</a></li>
-      <li><a href="{{ url_for('laws.create_law') }}">Создать закон</a></li>
-    </ul>
-  {% else %}
-    <p><a href="{{ url_for('users.login') }}">Войдите</a> или <a href="{{ url_for('users.register') }}">зарегистрируйтесь</a>, чтобы участвовать.</p>
-  {% endif %}
-<p>Недавние опросы</p>
-<ul>
-  {% for poll in polls %}
-    <li>
-      <a href="{{ url_for('polls.vote', poll_id=poll.id) }}">
-        {{ poll.question }} [{{ 'Голосование' if poll.type == 'vote' else 'Предложения' }}]
-      </a>
-    </li>
-  {% endfor %}
-</ul>
-<h2>Законы:</h2>
-<ul>
-  {% for law in laws %}
-    <li><a href="{{url_for('laws.law_profile', law_id=law.id)}}">{{law.name}}</a></li>
-  {% endfor %}
-</ul>
+      <!-- Топ партий -->
+      <div class="card">
+        <div class="card-header">ТОП партий</div>
+        <ul class="list-group list-group-flush">
+          {% for party in parties %}
+          <li class="list-group-item">
+            <a href="{{ url_for('parties.party_profile', party_id=party.id) }}" class="text-decoration-none">
+              {{ party.name }}
+            </a>
+          </li>
+          {% else %}
+          <li class="list-group-item">Нет пока партий</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
 
+    <!-- Центральная колонка -->
+    <div class="col-md-6">
+      <h2>Последние события</h2>
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5>Запуск игры</h5>
+          <p>Игра успешно запущена. Добро пожаловать!</p>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5>Принят первый закон</h5>
+          <p>Описание принятого закона будет здесь...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Правая колонка -->
+    <div class="col-md-3">
+      <h4>Новости</h4>
+      {% for new in news %}
+        <div class="mb-2 border-bottom pb-2">
+          <strong>
+            <a href="{{ url_for('news.profile', news_id=new.id) }}" class="text-decoration-none">
+              {{ new.name }}
+            </a>
+          </strong><br>
+          <small>{{ new.desc }}</small>
+        </div>
+      {% else %}
+        <div class="mb-2 border-bottom pb-2">
+          <strong>Новости дня</strong><br>
+          <small>Сегодня в государстве ничего не произошло.</small>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock %}

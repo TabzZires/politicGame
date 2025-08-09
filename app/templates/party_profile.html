@@ -2,44 +2,66 @@
 {% block title %}Профиль партии{% endblock %}
 
 {% block content %}
-  <h2>Партия: {{ party.name }}</h2>
-  <p><strong>Лидер:</strong> {{ party.leader.username if party.leader else "—" }}</p>
-  <h3>Участники</h3>
-  <ul>
-      {% for member in party.members %}
-      <li><a href="{{url_for('users.profile', user_id=member.id)}}">{{ member.username }}</a></li>
-      {% endfor %}
-  </ul>
+<div class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h2 class="card-title border-bottom pb-2 mb-4">{{ party.name }}</h2>
+      <p class="h5">
+        <strong>Лидер:</strong>
+        {% if party.leader %}
+          {{ party.leader.username }}
+        {% else %}
+          &mdash;
+        {% endif %}
+      </p>
 
+      <h3 class="mt-4 mb-3">Участники</h3>
+      {% if party.members %}
+      <ul class="list-group list-group-flush mb-4">
+        {% for member in party.members %}
+          <li class="list-group-item">
+            <a href="{{ url_for('users.profile', user_id=member.id) }}">{{ member.username }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+        <p class="text-muted">Участников пока нет.</p>
+      {% endif %}
 
-  <h3>Опросы партии</h3>
-  {% if party.polls %}
-    <ul>
-    {% for poll in party.polls %}
-      <li>
-        <a href="{{ url_for('polls.vote', poll_id=poll.id) }}">{{ poll.question }}</a>
-        <small>({{ 'Голосование' if poll.type == 'vote' else 'Предложения' }})</small>
-      </li>
-    {% endfor %}
-    </ul>
-  {% else %}
-    <p>Опросов пока нет.</p>
-  {% endif %}
-  {% if current_user.is_authenticated and current_user.party_id != party.id %}
-    <form action="{{ url_for('parties.join_party', party_id=party.id) }}" method="get">
-      <button type="submit">Вступить в партию</button>
-    </form>
-  {% elif current_user.party_id == party.id %}
-    <p><em>Вы состоите в этой партии</em></p>
-  {% endif %}
-  {% if current_user.is_authenticated and current_user.party_id == party.id %}
-    <form action="{{ url_for('parties.leave_party', party_id=party.id) }}" method="get">
-      <button type="submit">Выйти из партии</button>
-    </form>
-  {%endif%}
-  {% if current_user.is_authenticated and current_user.party_id == party.id and party.leader_id == None%}
-    <form action="{{ url_for('parties.become_leader', party_id=party.id) }}">
-      <button type="submit">Стать лидер</button>
-    </form>
-  {% endif %}
+      <h3 class="mt-4 mb-3">Опросы партии</h3>
+      {% if party.polls %}
+      <ul class="list-group list-group-flush mb-4">
+        {% for poll in party.polls %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('polls.vote', poll_id=poll.id) }}">{{ poll.question }}</a>
+            <small class="text-muted">{{ 'Голосование' if poll.type == 'vote' else 'Предложения' }}</small>
+          </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+        <p class="text-muted">Опросов пока нет.</p>
+      {% endif %}
+
+      <div class="mt-4">
+        {% if current_user.is_authenticated %}
+          {% if current_user.party_id != party.id %}
+            <form action="{{ url_for('parties.join_party', party_id=party.id) }}" method="get" class="d-inline">
+              <button type="submit" class="btn btn-primary">Вступить в партию</button>
+            </form>
+          {% elif current_user.party_id == party.id %}
+            <p class="text-success fst-italic">Вы состоите в этой партии</p>
+            <form action="{{ url_for('parties.leave_party', party_id=party.id) }}" method="get" class="d-inline">
+              <button type="submit" class="btn btn-outline-danger me-2">Выйти из партии</button>
+            </form>
+            {% if party.leader_id == None %}
+              <form action="{{ url_for('parties.become_leader', party_id=party.id) }}" method="get" class="d-inline">
+                <button type="submit" class="btn btn-outline-success">Стать лидер</button>
+              </form>
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

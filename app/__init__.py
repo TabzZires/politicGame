@@ -1,6 +1,6 @@
 from flask_login import LoginManager
 
-from .law_parser import init_law_system
+# from .law_parser import init_law_system
 from .models import db, User
 from flask import Flask
 from flask_migrate import Migrate
@@ -14,17 +14,18 @@ def create_app():
     app.config.from_pyfile('config.py')
 
     db.init_app(app)
-    init_law_system(app, db)
+    # init_law_system(app, db)
     migrate.init_app(app, db)
     login_manager.init_app(app)
     login_manager.login_view = 'users.login'  # редирект при доступе без входа
 
-    from .views import main, users, parties, polls, laws
+    from .views import main, users, parties, polls, laws, news
     app.register_blueprint(main.bp)    # добавь
     app.register_blueprint(users.bp)
     app.register_blueprint(parties.bp)
     app.register_blueprint(polls.bp)
     app.register_blueprint(laws.bp)
+    app.register_blueprint(news.bp)
 
     return app
 

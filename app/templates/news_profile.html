@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block title %}Новость{% endblock %}
+
+{% block content %}
+<style>
+.news-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 25px 30px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.news-container h2 {
+  font-size: 2.2rem;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 8px;
+}
+
+.news-meta {
+  font-size: 0.9rem;
+  color: #777;
+  margin-bottom: 25px;
+}
+
+.news-meta span {
+  font-weight: 600;
+  color: #555;
+}
+
+.news-text {
+  line-height: 1.6;
+  font-size: 1.1rem;
+}</style>
+
+<div class="news-container">
+  <h2>{{ news.name }}</h2>
+  <div class="news-meta">
+    Автор: <span>{{ news.author.username }}</span><br>
+    Партия: <span>{{ news.party.name if news.party else 'автор не состоит в партии' }}</span>
+  </div>
+  <p class="news-text">{{ news.text }}</p>
+</div>
+{% endblock %}

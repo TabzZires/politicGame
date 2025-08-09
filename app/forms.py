@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms import TextAreaField
 from wtforms.fields.choices import RadioField
+from wtforms.fields.datetime import DateField
 from wtforms.validators import DataRequired
 from wtforms import PasswordField, SelectField
 from wtforms.validators import Length
@@ -17,6 +18,7 @@ class CreatePollForm(FlaskForm):
     type = SelectField('Тип', choices=[('vote', 'Голосование'), ('suggest', 'Предложения')])
     party = SelectField('Партия', coerce=int)  # выбор из списка
     options = TextAreaField('Варианты (через новую строку)')
+    end_date = DateField('Конечная дата', validators=[DataRequired()])
     submit = SubmitField('Создать')
 
 
@@ -50,4 +52,11 @@ class SuggestionForm(FlaskForm):
 class LawForm(FlaskForm):
     name = StringField('Название', validators=[DataRequired()])
     text = StringField('Описание', validators=[DataRequired()])
+    submit = SubmitField('Создать')
+
+
+class NewsForm(FlaskForm):
+    name = StringField('Название', validators=[DataRequired()])
+    desc = StringField('Описание', validators=[DataRequired()])
+    text = StringField('Содержание', validators=[DataRequired()])
     submit = SubmitField('Создать')

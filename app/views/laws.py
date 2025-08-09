@@ -6,6 +6,43 @@ from ..models import Law, db, User, Party
 
 bp = Blueprint('laws', __name__, url_prefix='/laws')
 
+LAW_WORDS = [
+    # Субъекты
+    {"type": "subject", "text": "Пользователь"},
+    {"type": "subject", "text": "Правитель"},
+
+    # Условия
+    {"type": "condition", "text": "состоит в партии"},
+    {"type": "condition", "text": "состоит в партии"},
+    {"type": "condition", "text": "имеет право"},
+    {"type": "condition", "text": "с рейтингом >"},
+    {"type": "condition", "text": "с рейтингом <"},
+
+    {"type": "action2", "text": "имеет право"},
+
+    # Действия
+    {"type": "action", "text": "голосовать"},
+    {"type": "action", "text": "создавать законы"},
+    {"type": "action", "text": "создавать партии"},
+    {"type": "action", "text": "быть лидером партии"},
+
+    # Доп. логика
+    {"type": "extra", "text": "если"},
+    {"type": "extra", "text": "и"},
+    {"type": "extra", "text": "или"},
+    {"type": "extra", "text": "не"},
+    {"type": "extra", "text": "=="},
+    {"type": "extra", "text": ">"},
+    {"type": "extra", "text": "<"},
+
+    # Пустышки для ввода данных
+    {"type": "placeholder", "text": "[ЧИСЛО]"},
+    {"type": "placeholder", "text": "[СТРОКА]"},
+    {"type": "placeholder", "text": "[ПОЛЬЗОВАТЕЛЬ]"},
+    {"type": "placeholder", "text": "[ПАРТИЯ]"},
+    {"type": "placeholder", "text": "[ДАТА]"}
+]
+
 
 @bp.route('/<int:law_id>')
 def law_profile(law_id):
@@ -29,7 +66,7 @@ def create_law():
         flash('Закон создан!', 'success')
         return redirect(url_for('laws.law_profile', law_id=law.id))
     # Здесь words — словарь твоего языка
-    from ..law_words import LAW_WORDS
+
     return render_template('create_law.html', form=form, words=LAW_WORDS)
 
 

@@ -1,5 +1,8 @@
+from email.policy import default
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
+
 db = SQLAlchemy()
 
 
@@ -31,6 +34,8 @@ class Party(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), unique=True, nullable=False)
 
+    count = db.Column(db.Integer, nullable=False, default=0)
+
     leader_id = db.Column(
         db.Integer,
         db.ForeignKey('user.id', use_alter=True, name='fk_party_leader_id'),
@@ -42,6 +47,8 @@ class Poll(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.String(256), nullable=False)
     type = db.Column(db.String(16), nullable=False)  # 'vote' или 'suggest'
+    start_date = db.Column(db.DateTime, default=db.func.now())
+    end_date = db.Column(db.DateTime)
 
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     party_id = db.Column(db.Integer, db.ForeignKey('party.id'))
@@ -94,3 +101,15 @@ class Government(db.Model):
 
     leader = db.relationship('User', backref='leadership', foreign_keys=[leader_id])
 
+
+class News(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text)
+    desc = db.Column(db.Text)
+    text = db.Column(db.Text)
+
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    party_id = db.Column(db.Integer, db.ForeignKey('party.id'))
+
+    author = db.relationship('User', backref='news')
+    party = db.relationship('Party', backref='news')

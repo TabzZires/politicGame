@@ -35,6 +35,7 @@ def create_party():
 def join_party(party_id):
     party = Party.query.get_or_404(party_id)
     current_user.party = party
+    party.count += 1
     db.session.commit()
     return redirect(url_for('parties.party_profile', party_id=party.id))
 
@@ -43,6 +44,7 @@ def join_party(party_id):
 @login_required
 def leave_party(party_id):
     current_user.party = None
+    Party.query.get_or_404(party_id).count -= 1
     db.session.commit()
     return redirect(url_for('parties.party_profile', party_id=party_id))
 

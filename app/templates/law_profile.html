@@ -2,8 +2,25 @@
 {% block title %}Закон{% endblock %}
 
 {% block content %}
-    <h2>Закон: {{law.name}}</h2>
-    <h2>Автор: {{law.user.username}}</h2>
-    <h2>Партия: {{law.party.name if law.party else 'Собственный'}}</h2>
-    <p>{{law.text}}</p>
+<div class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h2 class="card-title border-bottom pb-2 mb-4">{{ law.name }}</h2>
+      <p class="mb-2">
+        <strong>Автор:</strong>
+        <span class="text-primary">{{ law.user.username }}</span>
+      </p>
+      <p class="mb-4">
+        <strong>Партия:</strong>
+        {% if law.party %}
+          <span class="text-info">{{ law.party.name }}</span>
+        {% else %}
+          <span class="text-muted">Автор не состоит в партии</span>
+        {% endif %}
+      </p>
+      <h5 class="mt-4">Текст закона:</h5>
+      <p class="mt-2" style="white-space: pre-line;">{{ law.text }}</p>
+    </div>
+  </div>
+</div>
 {% endblock %}

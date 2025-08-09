@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, request, url_for, flash
 from flask_login import login_required, current_user
 
-from ..law_parser import requires_permission
+# from ..law_parser import requires_permission
 from ..models import db, Poll, Vote, Suggestion, Option, Party, User
 from ..forms import CreatePollForm, VoteForm, SuggestionForm, AddOptionForm
 
@@ -27,7 +27,8 @@ def create_poll():
             question=form.question.data,
             type=form.type.data,
             author_id=current_user.id,
-            party_id=current_user.party_id  # автоматически от своей партии или None
+            party_id=current_user.party_id,
+            end_date=form.end_date.data # автоматически от своей партии или None
         )
         db.session.add(poll)
         db.session.commit()
@@ -45,7 +46,7 @@ def create_poll():
 
 @bp.route('/vote/<int:poll_id>', methods=['GET', 'POST'])
 @login_required
-@requires_permission('vote')
+# @requires_permission('vote')
 def vote(poll_id):
     poll = Poll.query.get_or_404(poll_id)
 

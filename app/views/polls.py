@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, redirect, request, url_for, flash
 from flask_login import login_required, current_user
 
-# from ..law_parser import requires_permission
 from ..models import db, Poll, Vote, Suggestion, Option, Party, User
 from ..forms import CreatePollForm, VoteForm, SuggestionForm, AddOptionForm
 
@@ -46,7 +45,6 @@ def create_poll():
 
 @bp.route('/vote/<int:poll_id>', methods=['GET', 'POST'])
 @login_required
-# @requires_permission('vote')
 def vote(poll_id):
     poll = Poll.query.get_or_404(poll_id)
 

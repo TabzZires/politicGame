@@ -1,26 +1,45 @@
 {% extends "layout.html" %}
-{% block title %}Закон{% endblock %}
+{% block title %}Закон: {{ law.name }}{% endblock %}
 
 {% block content %}
 <div class="container my-5">
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <h2 class="card-title border-bottom pb-2 mb-4">{{ law.name }}</h2>
+  <div class="card shadow-sm border-0 rounded-3">
+    <div class="card-body p-4">
+
+      <!-- Заголовок -->
+      <h2 class="card-title mb-3 text-dark">{{ law.name }}</h2>
+      <hr>
+
+      <!-- Автор -->
       <p class="mb-2">
         <strong>Автор:</strong>
-        <span class="text-primary">{{ law.user.username }}</span>
+        <a href="{{ url_for('users.profile', user_id=law.user_id) }}" class="badge bg-primary text-decoration-none">
+          {{ law.user.username }}
+        </a>
       </p>
+
+      <!-- Партия -->
       <p class="mb-4">
         <strong>Партия:</strong>
         {% if law.party %}
-          <span class="text-info">{{ law.party.name }}</span>
+          <a href="{{ url_for('parties.party_profile', party_id=law.party.id) }}" class="badge bg-info text-dark text-decoration-none">
+            {{ law.party.name }}
+          </a>
         {% else %}
           <span class="text-muted">Автор не состоит в партии</span>
         {% endif %}
       </p>
-      <h5 class="mt-4">Текст закона:</h5>
-      <p class="mt-2" style="white-space: pre-line;">{{ law.text }}</p>
+
+      <!-- Текст закона -->
+      <h5 class="fw-semibold mb-2">Текст закона</h5>
+      <pre class="p-3 bg-light rounded border"><code class="language-python">{{ law.text }}</code></pre>
+
     </div>
   </div>
 </div>
+
+<!-- Подключение highlight.js -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 {% endblock %}
